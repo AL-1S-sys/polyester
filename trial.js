@@ -22,7 +22,7 @@ const height = window.innerHeight || 300;
 
 const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
 
-// Wide Overview Position Targets
+// Wide Overview Position Targets (Scaled down and comfortably framed desuwa!)
 const wideCamPos = new THREE.Vector3(45, 55, 60);
 const wideTarget = new THREE.Vector3(0, 6, 0);
 
@@ -32,7 +32,6 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "hi
 renderer.setSize(width, height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-// Lock touch gestures to the canvas for iOS/Android desuwa
 renderer.domElement.style.touchAction = 'none';
 document.body.appendChild(renderer.domElement);
 
@@ -116,24 +115,16 @@ scene.add(userPin);
 const locationDisplay = document.getElementById('location-display');
 if (locationDisplay) locationDisplay.innerHTML = `📍 ${currentSpot.name}`;
 
-// Dismiss Overlay Action
+// Dismiss Overlay Action (QR Checkpoint Auto-Zoom Integration desuwa!)
 const closeBtn = document.getElementById('close-instructions');
 if (closeBtn) {
   closeBtn.addEventListener('click', (event) => {
     event.stopPropagation();
     if (overlay) overlay.classList.add('hidden');
 
-    activeIsolatedLayer = 'all';
-
-    Object.keys(floorMeshes).forEach(key => {
-      floorMeshes[key].visible = true;
-    });
-
-    if (userPin) userPin.visible = true;
-    if (layerDisplay) layerDisplay.innerHTML = '🏢 Viewing: All Floors';
-
-    targetCamPos.set(25, 35, 40);
-    targetLookAt.set(0, 6, 0);
+    // Automatically zoom into the scanned checkpoint layer desuwa!
+    const targetFloorY = (currentSpot.layer - 1) * spacing;
+    isolateAndZoomFloor(currentSpot.layer, targetFloorY);
   });
 }
 
@@ -214,11 +205,11 @@ function isolateAndZoomFloor(selectedLayer, floorY) {
   }
 
   if (selectedLayer === 'all') {
-    targetCamPos.set(25, 35, 40);
+    targetCamPos.set(45, 55, 60);
     targetLookAt.copy(wideTarget);
   } else {
     targetLookAt.set(0, floorY + 0.5, 0);
-    targetCamPos.set(0, floorY + 20, 30);
+    targetCamPos.set(0, floorY + 20, 24);
   }
 }
 
